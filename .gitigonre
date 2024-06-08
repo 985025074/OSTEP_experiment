@@ -1,4 +1,5 @@
-
+*
 # Ignore compiled files
 !wish.c
 !.vscode
+!.gitignore
