@@ -160,7 +160,7 @@ bool character_check(char character,char**args,char**target_file,bool* is_legal 
     bool flag1=false;//找到符号
     char for_check[2]={character,0};
     *is_legal=true;
-    for(int i=0;i<num_of_arg;i++){
+    for(int i=0;args[i]!=NULL;i++){
         if(!flag1&&strcmp(args[i],for_check)==0){
             *is_legal=false;
             flag1=true;
@@ -187,7 +187,7 @@ void together_eval(char** args) {
     bool together = and_check(args);
 
     if (together) {
-        int loc = 1;
+        int loc = 0;
         int start_point = 0;
         memset(together_args, 0, sizeof(together_args));
         
@@ -202,8 +202,6 @@ void together_eval(char** args) {
                 int pid = fork();
                 if (pid == 0) {
                     // 在子进程中，执行命令
-                    printf("子进程 %d 尝试运行命令: %s\n", getpid(), together_args[0]);
-                    fflush(stdout);
                     eval(together_args);
                     exit(0);
                 } else if (pid < 0) {
@@ -226,7 +224,6 @@ void together_eval(char** args) {
         int pid = fork();
         if (pid == 0) {
             // 在子进程中，执行命令
-            printf("子进程 %d 尝试运行命令: %s\n", getpid(), together_args[0]);
             fflush(stdout);
             eval(together_args);
             exit(0);
@@ -259,11 +256,9 @@ void eval(char**args){
     }
    
     if(built_in(cmd)){
-        printf("内置命令执行！");
         try_execvp(cmd,args);
     }
     else{
-        printf("外部命令执行！");
           int result=withpath_execvp(cmd,args);
           if(result==0){
             write(STDERR_FILENO, error_message, strlen(error_message)); 
